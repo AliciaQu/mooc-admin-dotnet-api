@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="ReadOnlyService.cs~RF121eac0.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="15.0.1" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.6.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Mooc.Application.Contracts\Mooc.Application.Contracts.csproj" />
+    <ProjectReference Include="..\Mooc.Core\Mooc.Core.csproj" />
+  </ItemGroup>
+
+</Project>
