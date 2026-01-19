@@ -5,13 +5,15 @@ namespace MoocWebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ClasAuthController : ControllerBase
+
+public class auth : ControllerBase
+
 
 {
 
-    private static readonly List<RegistrationDto> users = [
+    private static readonly List< RegistrationDto> users = [
 
- new RegistrationDto(
+ new  RegistrationDto(
         Id: 1,
         UserNmae: "yes",
         Email: "123324@.com",
@@ -20,7 +22,7 @@ public class ClasAuthController : ControllerBase
         Age: 12,
         PassWord: "qwertyuiop123!@#"
     ),
-    new RegistrationDto(
+    new  RegistrationDto(
         Id: 2,
         UserNmae: "agre",
         Email: "54321@.com",
@@ -31,9 +33,9 @@ public class ClasAuthController : ControllerBase
 )
 ];
 
-   
+
     [HttpGet("{id:int}")]
-     public IActionResult GetById(int id) 
+    public IActionResult GetById(int id)
     {
         var user = users.FirstOrDefault(u => u.Id == id);
 
@@ -42,6 +44,25 @@ public class ClasAuthController : ControllerBase
 
         return Ok(user);
     }
-    
+
+    [HttpPost]
+    public IActionResult Create([FromBody]  RegistrationDto input)
+    {
+       
+ var newId = users.Count != 0 ? users.Max(u => u.Id) + 1 : 1;
+        var newUser = new RegistrationDto(
+            Id: newId,
+             input.UserNmae,
+             input.Email,
+             input.PhoneNumber,
+             input.Gender,
+             input.Age,
+             input.PassWord
+        );
+
+        users.Add(newUser);
+
+        return CreatedAtAction(nameof(GetById), new { id = newUser.Id }, newUser);
+    }
 
 }
