@@ -1,22 +1,42 @@
 ﻿
-namespace Mooc.Model.DBContext;
+using Microsoft.EntityFrameworkCore;
+using Mooc.Model.Entity;  // make sure your entities are in this namespace
 
-public class MoocDBContext : DbContext
+namespace Mooc.Model.DBContext
 {
-    public MoocDBContext(DbContextOptions<MoocDBContext> options) : base(options)
+    public class MoocDBContext : DbContext
     {
+        public MoocDBContext(DbContextOptions<MoocDBContext> options) : base(options)
+        {
+        }
 
-    }
+        #region DbSets
 
-    #region demo
-    public DbSet<Test> Tests { get; set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<Permission> Permissions { get; set; }
+        public DbSet<RolePermission> RolePermissions { get; set; }
 
-    #endregion
+        #endregion
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
 
-        modelBuilder.ConfigureDemoManagement();
+            modelBuilder.ConfigureDemoManagement();
+
+            modelBuilder.Entity<RolePermission>()
+                .HasKey(rp => new { rp.RoleId, rp.PermissionId });
+
+            modelBuilder.Entity<RolePermission>()
+                .HasOne(rp => rp.Role)
+                .WithMany(r => r.RolePermissions)
+                .HasForeignKey(rp => rp.RoleId);
+
+            modelBuilder.Entity<RolePermission>()
+                .HasOne(rp => rp.Permission)
+                .WithMany(p => p.RolePermissions)
+                .HasForeignKey(rp => rp.PermissionId);
+        }
     }
 }
+
