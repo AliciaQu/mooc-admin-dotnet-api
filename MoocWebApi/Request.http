@@ -1,0 +1,5 @@
+GET http://localhost:9000/api/clasauth
+
+###
+
+GET http://localhost:9000/api/clasauth/1
