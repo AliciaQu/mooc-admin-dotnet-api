@@ -10,6 +10,11 @@ namespace Mooc.Model.DBContext
         {
         }
 
+        #region demo
+        public DbSet<Test> Tests { get; set; }
+
+        #endregion
+
         #region DbSets
 
         public DbSet<Role> Roles { get; set; }
