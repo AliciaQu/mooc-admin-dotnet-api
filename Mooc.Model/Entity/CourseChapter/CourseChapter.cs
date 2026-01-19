@@ -1,6 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using Mooc.Shared.Entity.CourseChapter;
-
 namespace Mooc.Model.Entity.CourseChapter;
 
 /// <summary>
@@ -9,22 +6,18 @@ namespace Mooc.Model.Entity.CourseChapter;
 public class CourseChapter : BaseEntity
 {
     /// <summary>
-    /// 课程ID
+    /// 课程ID（外键，关联到课程模块）
     /// </summary>
-    [Required]
     public long CourseId { get; set; }
 
     /// <summary>
     /// 章节名称
     /// </summary>
-    [Required]
-    [MaxLength(CourseChapterEntityConsts.MaxChapterNameLength)]
     public string ChapterName { get; set; }
 
     /// <summary>
     /// 章节描述
     /// </summary>
-    [MaxLength(CourseChapterEntityConsts.MaxDescriptionLength)]
     public string Description { get; set; }
 
     /// <summary>
@@ -50,13 +43,11 @@ public class CourseChapter : BaseEntity
     /// <summary>
     /// 视频URL
     /// </summary>
-    [MaxLength(CourseChapterEntityConsts.MaxVideoUrlLength)]
     public string VideoUrl { get; set; }
 
     /// <summary>
     /// 资料URL
     /// </summary>
-    [MaxLength(CourseChapterEntityConsts.MaxMaterialUrlLength)]
     public string MaterialUrl { get; set; }
 
     /// <summary>

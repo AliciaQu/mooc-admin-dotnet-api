@@ -11,23 +11,14 @@ namespace MoocWebApi.Controllers.CourseChapter;
 public class CourseChapterController : ControllerBase
 {
     private readonly ILogger<CourseChapterController> _logger;
-    private readonly ICourseChapterReadService _readService;
-    private readonly ICourseChapterCreateService _createService;
-    private readonly ICourseChapterUpdateService _updateService;
-    private readonly ICourseChapterDeleteService _deleteService;
+    private readonly ICourseChapterAppService _courseChapterService;
 
     public CourseChapterController(
         ILogger<CourseChapterController> logger,
-        ICourseChapterReadService readService,
-        ICourseChapterCreateService createService,
-        ICourseChapterUpdateService updateService,
-        ICourseChapterDeleteService deleteService)
+        ICourseChapterAppService courseChapterService)
     {
         _logger = logger;
-        _readService = readService;
-        _createService = createService;
-        _updateService = updateService;
-        _deleteService = deleteService;
+        _courseChapterService = courseChapterService;
     }
 
     /// <summary>
@@ -37,7 +28,7 @@ public class CourseChapterController : ControllerBase
     [HttpGet("{id}")]
     public async Task<CourseChapterOutputDto> GetAsync(long id)
     {
-        return await _readService.GetAsync(id);
+        return await _courseChapterService.GetAsync(id);
     }
 
     /// <summary>
@@ -46,7 +37,7 @@ public class CourseChapterController : ControllerBase
     [HttpGet]
     public async Task<PagedResultDto<CourseChapterOutputDto>> GetPageAsync([FromQuery] FilterPagedResultRequestDto input)
     {
-        return await _readService.GetListAsync(input);
+        return await _courseChapterService.GetListAsync(input);
     }
 
     /// <summary>
@@ -56,7 +47,7 @@ public class CourseChapterController : ControllerBase
     [HttpGet("{courseId}")]
     public async Task<List<CourseChapterOutputDto>> GetByCourseIdAsync(long courseId)
     {
-        return await _readService.GetChaptersByCourseIdAsync(courseId);
+        return await _courseChapterService.GetChaptersByCourseIdAsync(courseId);
     }
 
     /// <summary>
@@ -65,7 +56,7 @@ public class CourseChapterController : ControllerBase
     [HttpPost]
     public async Task<CourseChapterOutputDto> CreateAsync([FromBody] CreateCourseChapterInputDto input)
     {
-        return await _createService.CreateAsync(input);
+        return await _courseChapterService.CreateAsync(input);
     }
 
     /// <summary>
@@ -74,7 +65,7 @@ public class CourseChapterController : ControllerBase
     [HttpPost]
     public async Task<CourseChapterOutputDto> UpdateAsync([FromBody] UpdateCourseChapterInputDto input)
     {
-        return await _updateService.UpdateAsync(input.Id, input);
+        return await _courseChapterService.UpdateAsync(input.Id, input);
     }
 
     /// <summary>
@@ -84,7 +75,7 @@ public class CourseChapterController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<bool> DeleteAsync(long id)
     {
-        await _deleteService.DeleteAsync(id);
+        await _courseChapterService.DeleteAsync(id);
         return true;
     }
 
@@ -96,7 +87,7 @@ public class CourseChapterController : ControllerBase
     [HttpPost]
     public async Task<bool> UpdateOrderAsync(long id, [FromBody] int newOrder)
     {
-        await _updateService.UpdateChapterOrderAsync(id, newOrder);
+        await _courseChapterService.UpdateChapterOrderAsync(id, newOrder);
         return true;
     }
 
@@ -107,7 +98,7 @@ public class CourseChapterController : ControllerBase
     [HttpPost]
     public async Task<bool> ToggleStatusAsync(long id)
     {
-        await _updateService.ToggleChapterStatusAsync(id);
+        await _courseChapterService.ToggleChapterStatusAsync(id);
         return true;
     }
 }
