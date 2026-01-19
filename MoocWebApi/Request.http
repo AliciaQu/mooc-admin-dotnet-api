@@ -2,7 +2,7 @@ GET http://localhost:9000/api/clasauth
 
 ###
 
-GET http://localhost:9000/api/auth/2
+GET http://localhost:9000/api/auth/3
 
 ###
 POST http://localhost:9000/api/auth
@@ -24,3 +24,23 @@ Content-type:application/json
 
 
 }
+###
+PUT http://localhost:9000/api/auth/2
+Content-type:application/json
+
+{
+
+
+"UserNmae" :"bigx",
+"Email" :" BUYIn@gmail",
+"PHoneNumber":4568910,
+"Gender":"female"
+,"Age":19,
+"PassWord":"noe one knows this"
+}
+
+
+###
+
+DELETE http://localhost:9000/api/auth/1
+Content-type:application/json

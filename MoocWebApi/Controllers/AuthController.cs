@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Mooc.Application.Contracts.Demo;
 using Mooc.Application.Demo;
 
@@ -11,7 +12,7 @@ public class auth : ControllerBase
 
 {
 
-    private static readonly List< RegistrationDto> users = [
+    private static readonly List<RegistrationDto> users = [
 
  new  RegistrationDto(
         Id: 1,
@@ -46,10 +47,10 @@ public class auth : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult Create([FromBody]  RegistrationDto input)
+    public IActionResult CreateAsync([FromBody] RegistrationDto input)
     {
-       
- var newId = users.Count != 0 ? users.Max(u => u.Id) + 1 : 1;
+
+        var newId = users.Count != 0 ? users.Max(u => u.Id) + 1 : 1;
         var newUser = new RegistrationDto(
             Id: newId,
              input.UserNmae,
@@ -63,6 +64,46 @@ public class auth : ControllerBase
         users.Add(newUser);
 
         return CreatedAtAction(nameof(GetById), new { id = newUser.Id }, newUser);
+    }
+
+    [HttpPut("{id:int}")]
+    public IActionResult UpdateAsync(int id, [FromBody] RegistrationDto input)
+    {
+        var index = users.FindIndex(u => u.Id == id);
+
+
+
+        var updatedUser = users[index] with
+        {
+            UserNmae = input.UserNmae,
+            Email = input.Email,
+            PhoneNumber = input.PhoneNumber,
+            Gender = input.Gender,
+            Age = input.Age,
+            PassWord = input.PassWord
+        };
+
+        users[index] = updatedUser;
+
+        return Ok(updatedUser);
+
+
+
+    }
+    [HttpDelete("{id}")]
+  
+    public IActionResult Delete(int id)
+    {
+
+        var DeleteItem = users.FindIndex(u => u.Id == id);
+        if (DeleteItem == -1)
+
+
+            return NotFound("Sorry, We dont have this User");
+
+        users.RemoveAt(DeleteItem);
+        return NoContent();
+
     }
 
 }
