@@ -3,7 +3,7 @@ using Mooc.Application.Contracts.CourseChapter;
 namespace MoocWebApi.Controllers.CourseChapter;
 
 /// <summary>
-/// 课程章节管理API
+/// Course Chapter Management API
 /// </summary>
 [ApiExplorerSettings(GroupName = nameof(SwaggerGroup.CourseChapterService))]
 [Route("api/[controller]/[action]")]
@@ -22,9 +22,9 @@ public class CourseChapterController : ControllerBase
     }
 
     /// <summary>
-    /// 获取章节详情
+    /// Get chapter details
     /// </summary>
-    /// <param name="id">章节ID</param>
+    /// <param name="id">Chapter ID</param>
     [HttpGet("{id}")]
     public async Task<CourseChapterOutputDto> GetAsync(long id)
     {
@@ -32,7 +32,7 @@ public class CourseChapterController : ControllerBase
     }
 
     /// <summary>
-    /// 获取章节列表（分页）
+    /// Get chapter list (paginated)
     /// </summary>
     [HttpGet]
     public async Task<PagedResultDto<CourseChapterOutputDto>> GetPageAsync([FromQuery] FilterPagedResultRequestDto input)
@@ -41,9 +41,9 @@ public class CourseChapterController : ControllerBase
     }
 
     /// <summary>
-    /// 根据课程ID获取所有章节
+    /// Get all chapters by course ID
     /// </summary>
-    /// <param name="courseId">课程ID</param>
+    /// <param name="courseId">Course ID</param>
     [HttpGet("{courseId}")]
     public async Task<List<CourseChapterOutputDto>> GetByCourseIdAsync(long courseId)
     {
@@ -51,7 +51,7 @@ public class CourseChapterController : ControllerBase
     }
 
     /// <summary>
-    /// 创建章节
+    /// Create chapter
     /// </summary>
     [HttpPost]
     public async Task<CourseChapterOutputDto> CreateAsync([FromBody] CreateCourseChapterInputDto input)
@@ -60,7 +60,7 @@ public class CourseChapterController : ControllerBase
     }
 
     /// <summary>
-    /// 更新章节
+    /// Update chapter
     /// </summary>
     [HttpPost]
     public async Task<CourseChapterOutputDto> UpdateAsync([FromBody] UpdateCourseChapterInputDto input)
@@ -69,9 +69,9 @@ public class CourseChapterController : ControllerBase
     }
 
     /// <summary>
-    /// 删除章节
+    /// Delete chapter
     /// </summary>
-    /// <param name="id">章节ID</param>
+    /// <param name="id">Chapter ID</param>
     [HttpDelete("{id}")]
     public async Task<bool> DeleteAsync(long id)
     {
@@ -80,10 +80,10 @@ public class CourseChapterController : ControllerBase
     }
 
     /// <summary>
-    /// 更新章节顺序
+    /// Update chapter order
     /// </summary>
-    /// <param name="id">章节ID</param>
-    /// <param name="newOrder">新的顺序号</param>
+    /// <param name="id">Chapter ID</param>
+    /// <param name="newOrder">New order index</param>
     [HttpPost]
     public async Task<bool> UpdateOrderAsync(long id, [FromBody] int newOrder)
     {
@@ -92,9 +92,9 @@ public class CourseChapterController : ControllerBase
     }
 
     /// <summary>
-    /// 切换章节状态（启用/禁用）
+    /// Toggle chapter status (active/inactive)
     /// </summary>
-    /// <param name="id">章节ID</param>
+    /// <param name="id">Chapter ID</param>
     [HttpPost]
     public async Task<bool> ToggleStatusAsync(long id)
     {

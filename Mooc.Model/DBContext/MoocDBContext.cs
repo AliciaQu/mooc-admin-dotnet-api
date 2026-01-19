@@ -1,3 +1,4 @@
+using Mooc.Model.Entity.Course;
 using Mooc.Model.Entity.CourseChapter;
 
 using Microsoft.EntityFrameworkCore;

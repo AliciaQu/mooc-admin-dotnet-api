@@ -1,7 +1,7 @@
 namespace Mooc.Application.Contracts.CourseChapter.Dto;
 
 /// <summary>
-/// 创建课程章节输入DTO
+/// Input DTO for Creating Course Chapter
 /// </summary>
 public class CreateCourseChapterInputDto : CreateOrUpdateCourseChapterBaseInputDto
 {

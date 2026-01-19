@@ -1,7 +1,7 @@
 namespace Mooc.Application.Contracts.CourseChapter.Dto;
 
 /// <summary>
-/// 课程章节输出DTO
+/// Course Chapter Output DTO
 /// </summary>
 public class CourseChapterOutputDto : BaseEntityDto
 {

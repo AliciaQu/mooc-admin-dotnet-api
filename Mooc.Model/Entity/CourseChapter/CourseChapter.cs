@@ -1,72 +1,75 @@
 namespace Mooc.Model.Entity.CourseChapter;
 
 /// <summary>
-/// 课程章节实体
+/// Course Chapter Entity
 /// </summary>
 public class CourseChapter : BaseEntity
 {
     /// <summary>
-    /// 课程ID（外键，关联到课程模块）
+    /// Course ID (Foreign Key)
     /// </summary>
     public long CourseId { get; set; }
 
     /// <summary>
-    /// 章节名称
+    /// Chapter Name
     /// </summary>
     public string ChapterName { get; set; }
 
     /// <summary>
-    /// 章节描述
+    /// Chapter Description
     /// </summary>
     public string Description { get; set; }
 
     /// <summary>
-    /// 章节顺序
+    /// Chapter Order Index
     /// </summary>
     public int OrderIndex { get; set; }
 
     /// <summary>
-    /// 章节时长（分钟）
+    /// Chapter Duration (in minutes)
     /// </summary>
     public int Duration { get; set; }
 
     /// <summary>
-    /// 是否启用
+    /// Is Active/Enabled
     /// </summary>
     public bool IsActive { get; set; } = true;
 
     /// <summary>
-    /// 是否免费试看
+    /// Is Free Preview
     /// </summary>
     public bool IsFree { get; set; } = false;
 
     /// <summary>
-    /// 视频URL
+    /// Video URL
     /// </summary>
     public string VideoUrl { get; set; }
 
     /// <summary>
-    /// 资料URL
+    /// Material/Resource URL
     /// </summary>
     public string MaterialUrl { get; set; }
 
     /// <summary>
-    /// 创建时间
+    /// Created At
     /// </summary>
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     /// <summary>
-    /// 创建人ID
+    /// Created By User ID
     /// </summary>
     public long CreatedBy { get; set; }
 
     /// <summary>
-    /// 更新时间
+    /// Updated At
     /// </summary>
     public DateTime? UpdatedAt { get; set; }
 
     /// <summary>
-    /// 更新人ID
+    /// Updated By User ID
     /// </summary>
     public long? UpdatedBy { get; set; }
+
+    // Navigation property: many chapters belong to one course
+    public virtual Course.Course Course { get; set; }
 }

@@ -1,35 +1,35 @@
 namespace Mooc.Model.Entity.Course;
 
 /// <summary>
-/// 课程实体（示例 - 由Terence负责完善）
+/// Course Entity (Example - To be completed by Terence)
 /// </summary>
 public class Course : BaseEntity
 {
     /// <summary>
-    /// 课程名称
+    /// Course Name
     /// </summary>
     public string CourseName { get; set; }
 
     /// <summary>
-    /// 课程描述
+    /// Course Description
     /// </summary>
     public string Description { get; set; }
 
     /// <summary>
-    /// 是否启用
+    /// Is Active/Enabled
     /// </summary>
     public bool IsActive { get; set; } = true;
 
     /// <summary>
-    /// 创建时间
+    /// Created At
     /// </summary>
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     /// <summary>
-    /// 更新时间
+    /// Updated At
     /// </summary>
     public DateTime? UpdatedAt { get; set; }
 
-    // 导航属性：一个课程包含多个章节
+    // Navigation property: one course has many chapters
     public virtual ICollection<CourseChapter.CourseChapter> Chapters { get; set; }
 }

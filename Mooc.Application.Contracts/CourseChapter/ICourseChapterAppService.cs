@@ -1,22 +1,22 @@
 namespace Mooc.Application.Contracts.CourseChapter;
 
 /// <summary>
-/// 课程章节应用服务接口（整合CRUD操作）
+/// Course Chapter Application Service Interface (Integrated CRUD Operations)
 /// </summary>
 public interface ICourseChapterAppService : ICrudService<CourseChapterOutputDto, CourseChapterOutputDto, long, FilterPagedResultRequestDto, CreateCourseChapterInputDto, UpdateCourseChapterInputDto>
 {
     /// <summary>
-    /// 根据课程ID获取所有章节
+    /// Get all chapters by course ID
     /// </summary>
     Task<List<CourseChapterOutputDto>> GetChaptersByCourseIdAsync(long courseId);
 
     /// <summary>
-    /// 更新章节顺序
+    /// Update chapter order
     /// </summary>
     Task UpdateChapterOrderAsync(long chapterId, int newOrder);
 
     /// <summary>
-    /// 切换章节状态（启用/禁用）
+    /// Toggle chapter status (active/inactive)
     /// </summary>
     Task ToggleChapterStatusAsync(long chapterId);
 }

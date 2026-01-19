@@ -1,3 +1,6 @@
+using Mooc.Model.Entity.Course;
+using Mooc.Model.Entity.CourseChapter;
+using Mooc.Shared.Entity.Course;
 using Mooc.Shared.Entity.CourseChapter;
 
 public static class MoocDbContextModelCreatingExtensions
@@ -7,12 +10,12 @@ public static class MoocDbContextModelCreatingExtensions
 
 
     /// <summary>
-    /// Demo
+    /// Demo Configuration
     /// </summary>
     /// <param name="modelBuilder"></param>
     public static void ConfigureDemoManagement(this ModelBuilder modelBuilder)
     {
-        //Test
+        // Test entity
         modelBuilder.Entity<Test>(b =>
         {
             b.ToTable(TablePrefix + "Test");
@@ -23,75 +26,100 @@ public static class MoocDbContextModelCreatingExtensions
     }
 
     /// <summary>
-    /// 课程章节管理配置
+    /// Course Management Configuration (Course + CourseChapter)
     /// </summary>
     /// <param name="modelBuilder"></param>
-    public static void ConfigureCourseChapterManagement(this ModelBuilder modelBuilder)
+    public static void ConfigureCourseManagement(this ModelBuilder modelBuilder)
     {
-        // CourseChapter（课程章节）
+        // Course entity
+        modelBuilder.Entity<Course>(b =>
+        {
+            b.ToTable(TablePrefix + "Courses");
+            b.HasKey(x => x.Id);
+            b.Property(e => e.Id).ValueGeneratedNever();
+            
+            b.Property(c => c.CourseName)
+                .IsRequired()
+                .HasMaxLength(CourseEntityConsts.MaxCourseNameLength);
+            
+            b.Property(c => c.Description)
+                .HasMaxLength(CourseEntityConsts.MaxDescriptionLength);
+            
+            b.Property(c => c.IsActive)
+                .IsRequired()
+                .HasDefaultValue(true);
+            
+            b.Property(c => c.CreatedAt)
+                .IsRequired();
+            
+            // Configure one-to-many relationship: one course has many chapters
+            b.HasMany(c => c.Chapters)
+                .WithOne(ch => ch.Course)
+                .HasForeignKey(ch => ch.CourseId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // CourseChapter entity
         modelBuilder.Entity<CourseChapter>(b =>
         {
             b.ToTable(TablePrefix + "CourseChapters");
             b.HasKey(x => x.Id);
             b.Property(e => e.Id).ValueGeneratedNever();
             
-            // 外键（关联到课程，由Terence负责）
+            // Foreign key
             b.Property(ch => ch.CourseId)
                 .IsRequired();
             
-            // 章节名称
+            // Chapter name
             b.Property(ch => ch.ChapterName)
                 .IsRequired()
                 .HasMaxLength(CourseChapterEntityConsts.MaxChapterNameLength);
             
-            // 章节描述
+            // Chapter description
             b.Property(ch => ch.Description)
                 .HasMaxLength(CourseChapterEntityConsts.MaxDescriptionLength);
             
-            // 章节顺序
+            // Chapter order
             b.Property(ch => ch.OrderIndex)
                 .IsRequired();
             
-            // 章节时长
+            // Chapter duration
             b.Property(ch => ch.Duration)
                 .IsRequired()
                 .HasDefaultValue(0);
             
-            // 是否启用
+            // Is active
             b.Property(ch => ch.IsActive)
                 .IsRequired()
                 .HasDefaultValue(true);
             
-            // 是否免费
+            // Is free
             b.Property(ch => ch.IsFree)
                 .IsRequired()
                 .HasDefaultValue(false);
             
-            // 视频URL
+            // Video URL
             b.Property(ch => ch.VideoUrl)
                 .HasMaxLength(CourseChapterEntityConsts.MaxVideoUrlLength);
             
-            // 资料URL
+            // Material URL
             b.Property(ch => ch.MaterialUrl)
                 .HasMaxLength(CourseChapterEntityConsts.MaxMaterialUrlLength);
             
-            // 创建时间
+            // Created at
             b.Property(ch => ch.CreatedAt)
                 .IsRequired();
             
-            // 创建人ID
+            // Created by
             b.Property(ch => ch.CreatedBy)
                 .IsRequired();
             
-            // 创建索引
+            // Create indexes
             b.HasIndex(ch => ch.CourseId)
                 .HasDatabaseName("IX_CourseChapters_CourseId");
             
             b.HasIndex(ch => new { ch.CourseId, ch.OrderIndex })
                 .HasDatabaseName("IX_CourseChapters_CourseId_OrderIndex");
-            
-            // 注意：外键关系暂不配置，等Terence完成Course实体后再由他配置
-            // 或者在迁移时手动添加外键约束
         });
     }
 }
