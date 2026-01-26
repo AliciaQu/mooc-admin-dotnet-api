@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Mooc.Model.DBContext;
 
@@ -10,9 +11,11 @@ using Mooc.Model.DBContext;
 namespace Mooc.Model.Migrations
 {
     [DbContext(typeof(MoocDBContext))]
-    partial class MoocDBContextModelSnapshot : ModelSnapshot
+    [Migration("20260119080059_AddRolePermissionEntities")]
+    partial class AddRolePermissionEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
