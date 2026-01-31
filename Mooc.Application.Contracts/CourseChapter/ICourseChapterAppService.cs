@@ -1,3 +1,5 @@
+using Mooc.Application.Contracts.CourseChapter.Dto;
+
 namespace Mooc.Application.Contracts.CourseChapter;
 
 /// <summary>
