@@ -1,4 +1,6 @@
-﻿
+using Mooc.Model.Entity.Course;
+using Mooc.Model.Entity.CourseChapter;
+
 using Microsoft.EntityFrameworkCore;
 using Mooc.Model.Entity;  // make sure your entities are in this namespace
 

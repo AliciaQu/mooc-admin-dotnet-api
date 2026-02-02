@@ -15,7 +15,7 @@ public class auth : ControllerBase
     private static readonly List<RegistrationDto> users = [
 
  new  RegistrationDto(
-        Id: 1,
+        Id :  1,
         UserNmae: "yes",
         Email: "123324@.com",
         PhoneNumber: 1234567789,
@@ -24,7 +24,7 @@ public class auth : ControllerBase
         PassWord: "qwertyuiop123!@#"
     ),
     new  RegistrationDto(
-        Id: 2,
+        Id : 2,
         UserNmae: "agre",
         Email: "54321@.com",
         PhoneNumber: 65434321,
@@ -53,7 +53,7 @@ public class auth : ControllerBase
         var newId = users.Count != 0 ? users.Max(u => u.Id) + 1 : 1;
         var newUser = new RegistrationDto(
             Id: newId,
-             input.UserNmae,
+             input.UserName,
              input.Email,
              input.PhoneNumber,
              input.Gender,
@@ -75,7 +75,7 @@ public class auth : ControllerBase
 
         var updatedUser = users[index] with
         {
-            UserNmae = input.UserNmae,
+			UserName = input.UserName,
             Email = input.Email,
             PhoneNumber = input.PhoneNumber,
             Gender = input.Gender,
