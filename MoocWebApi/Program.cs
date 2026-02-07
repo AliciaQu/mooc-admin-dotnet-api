@@ -46,7 +46,7 @@ namespace MoocWebApi
                     containerBuilder.RegisterModule<AutofacModule>();
                 });
 
-                // ÅäÖÃÏìÓ¦Í·ÒÔÊ¹ÓÃ UTF-8 ±àÂë  
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦Í·ï¿½ï¿½Ê¹ï¿½ï¿½ UTF-8 ï¿½ï¿½ï¿½ï¿½  
                 builder.Services.Configure<WebEncoderOptions>(options =>
                 {
                     options.TextEncoderSettings = new System.Text.Encodings.Web.TextEncoderSettings(System.Text.Unicode.UnicodeRanges.All);
@@ -96,7 +96,7 @@ namespace MoocWebApi
                 builder.Host.UseNLog();
 
                 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-                //builder.Services.AddEndpointsApiExplorer();
+                builder.Services.AddEndpointsApiExplorer();
 
                 builder.Services.AddSwaggerMooc();
 
