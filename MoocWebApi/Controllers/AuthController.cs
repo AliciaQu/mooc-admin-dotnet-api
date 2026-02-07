@@ -5,13 +5,16 @@ using Mooc.Application.Contracts.Demo;
 using Mooc.Application.Demo;
 using Mooc.Model.Entity;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.Text;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace MoocWebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 
-public class auth : ControllerBase
+public class auth (IConfiguration configuration): ControllerBase
 
 
 {
@@ -24,11 +27,11 @@ public class auth : ControllerBase
 	[HttpPost("registr")]
     public ActionResult<User> Register(RegistrationDto request)
     {
+
 		var user = new User();
 
-
 		var Passwordhasher = new PasswordHasher<User>().HashPassword(user, request.Password);
-		
+	
 
 
 		user.UserName = request.UserName;
@@ -50,12 +53,6 @@ public class auth : ControllerBase
     {
 		var user = _users.FirstOrDefault(u => u.UserName == Request.Username);
 
-		// If user not found
-		if (user == null)
-		{
-			return BadRequest("User Name Or Pass word dose not Found.");
-		}
-
 		var Passwordhasher = new PasswordHasher<User>();
 		var result = Passwordhasher.VerifyHashedPassword(user, user.PassWord, Request.Password);
 
@@ -63,13 +60,33 @@ public class auth : ControllerBase
 		{
 			return BadRequest("User Name Or Pass word dose not Found.");
 		}
-		string token = "This is working good";
+		string token = CreatToken(user);
 
 
 		return Ok(token);
 	}
- 
 
+	private string CreatToken(User user)
+	{
+		var claims = new List<Claim>
+		{
+			new Claim(ClaimTypes.Name,user.UserName)
+
+		};
+		var key = new SymmetricSecurityKey(
+			Encoding.UTF8.GetBytes(configuration.GetValue<string>("AppSetting:Token")!));
+
+		var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+		var tokenDescriptor = new JwtSecurityToken(
+		 issuer: configuration["JwtSetting:Issuer"],
+		 audience: configuration["JwtSetting:Audience"],
+		 claims: claims,
+		 expires: DateTime.UtcNow.AddSeconds(
+			 double.Parse(configuration["JwtSetting:ExpireSeconds"]!)),
+		 signingCredentials: creds
+	 );
+		return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);	
+	}
     
 
 
