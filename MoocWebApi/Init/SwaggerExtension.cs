@@ -63,7 +63,7 @@ public static class SwaggerExtension
 
 
     /// <summary>
-    ///  Join routing and pipeline
+    /// Join routing and pipeline
     /// </summary>
     /// <param name="app"></param>
     public static void UseSwaggerMooc(this WebApplication app)

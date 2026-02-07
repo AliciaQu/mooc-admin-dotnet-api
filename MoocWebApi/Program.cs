@@ -46,7 +46,7 @@ namespace MoocWebApi
                     containerBuilder.RegisterModule<AutofacModule>();
                 });
 
-                // 配置响应头以使用 UTF-8 编码  
+                // Configure application to use UTF-8 encoding  
                 builder.Services.Configure<WebEncoderOptions>(options =>
                 {
                     options.TextEncoderSettings = new System.Text.Encodings.Web.TextEncoderSettings(System.Text.Unicode.UnicodeRanges.All);
@@ -96,7 +96,7 @@ namespace MoocWebApi
                 builder.Host.UseNLog();
 
                 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-                //builder.Services.AddEndpointsApiExplorer();
+                builder.Services.AddEndpointsApiExplorer();
 
                 builder.Services.AddSwaggerMooc();
 
@@ -120,10 +120,37 @@ namespace MoocWebApi
 
                 var app = builder.Build();
 
+                // Add detection statements: Check if API endpoints are correctly discovered
+                var actionDescriptorProvider = app.Services.GetRequiredService<Microsoft.AspNetCore.Mvc.Infrastructure.IActionDescriptorCollectionProvider>();
+                var actionDescriptors = actionDescriptorProvider.ActionDescriptors.Items;
+                Console.WriteLine($"Number of discovered API endpoints: {actionDescriptors.Count}");
+                
+                // Group and count by controller
+                var controllerGroups = actionDescriptors
+                    .Where(ad => ad.RouteValues.ContainsKey("controller"))
+                    .GroupBy(ad => ad.RouteValues["controller"]);
+                
+                foreach (var group in controllerGroups)
+                {
+                    Console.WriteLine($"Controller: {group.Key}, Number of endpoints: {group.Count()}");
+                    foreach (var ad in group)
+                    {
+                        var routeTemplate = ad.AttributeRouteInfo?.Template ?? "No route template";
+                        // Get HTTP method information
+                        string httpMethod = "No HTTP method";
+                        // Try to get HTTP method from endpoint metadata
+                        var methodAttributes = ad.EndpointMetadata.OfType<Microsoft.AspNetCore.Mvc.Routing.HttpMethodAttribute>();
+                        if (methodAttributes.Any())
+                        {
+                            httpMethod = string.Join(", ", methodAttributes.SelectMany(m => m.HttpMethods));
+                        }
+                        Console.WriteLine($"  - {httpMethod}: {routeTemplate}");
+                    }
+                }
+
                 app.UseCors(defaultPolicy);
                 app.UseMiddleware<ExceptionHandlingMiddleware>();
                 // Configure the HTTP request pipeline.
-                app.UseSwaggerMooc();
                 if (app.Environment.IsDevelopment())
                 {
                     app.UseSwaggerMooc();

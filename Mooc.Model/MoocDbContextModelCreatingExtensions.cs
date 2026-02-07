@@ -1,5 +1,7 @@
+using Mooc.Model.Entity;
 using Mooc.Model.Entity.Course;
 using Mooc.Model.Entity.CourseChapter;
+using Mooc.Model.Entity.Category;
 using Mooc.Shared.Entity.Course;
 using Mooc.Shared.Entity.CourseChapter;
 
@@ -26,6 +28,183 @@ public static class MoocDbContextModelCreatingExtensions
     }
 
     /// <summary>
+    /// User Management Configuration (User, UserRole, Teacher)
+    /// </summary>
+    /// <param name="modelBuilder"></param>
+    public static void ConfigureUserManagement(this ModelBuilder modelBuilder)
+    {
+        // User entity
+        modelBuilder.Entity<User>(b =>
+        {
+            b.ToTable(TablePrefix + "Users");
+            b.HasKey(x => x.Id);
+            b.Property(e => e.Id).ValueGeneratedNever();
+            
+            b.Property(u => u.UserName)
+                .IsRequired()
+                .HasMaxLength(100);
+            
+            b.Property(u => u.Email)
+                .IsRequired()
+                .HasMaxLength(100);
+            
+            // Add unique indexes
+            b.HasIndex(u => u.UserName)
+                .IsUnique();
+            
+            b.HasIndex(u => u.Email)
+                .IsUnique();
+            
+            b.Property(u => u.Password)
+                .IsRequired()
+                .HasMaxLength(255);
+            
+            b.Property(u => u.FirstName)
+                .IsRequired()
+                .HasMaxLength(50);
+            
+            b.Property(u => u.LastName)
+                .IsRequired()
+                .HasMaxLength(50);
+            
+            b.Property(u => u.Phone)
+                .HasMaxLength(20);
+            
+            b.Property(u => u.Address)
+                .HasMaxLength(255);
+            
+            b.Property(u => u.Gender);
+            
+            b.Property(u => u.Dob);
+            
+            b.Property(u => u.Avatar)
+                .HasMaxLength(500);
+            
+            b.Property(u => u.Bio)
+                .HasMaxLength(1000);
+            
+            b.Property(u => u.CreatedAt)
+                .IsRequired();
+            
+            b.Property(u => u.UpdatedAt);
+            
+            // Configure many-to-many relationship: user has many roles
+            b.HasMany(u => u.Roles)
+                .WithMany()
+                .UsingEntity<UserRole>(
+                    j => j.HasOne(ur => ur.Role).WithMany(),
+                    j => j.HasOne(ur => ur.User).WithMany()
+                );
+            
+            // Configure one-to-one relationship: user has one teacher profile
+            b.HasOne(u => u.TeacherProfile)
+                .WithOne(t => t.User)
+                .HasForeignKey<Teacher>(t => t.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            // Configure one-to-many relationship: user has many courses as teacher
+            b.HasMany(u => u.CoursesAsTeacher)
+                .WithOne(c => c.Teacher)
+                .HasForeignKey(c => c.TeacherId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        // UserRole entity
+        modelBuilder.Entity<UserRole>(b =>
+        {
+            b.ToTable(TablePrefix + "UserRoles");
+            b.HasKey(x => x.Id);
+            b.Property(e => e.Id).ValueGeneratedNever();
+            
+            b.Property(ur => ur.UserId)
+                .IsRequired();
+            
+            b.Property(ur => ur.RoleId)
+                .IsRequired();
+            
+            b.Property(ur => ur.CreatedAt)
+                .IsRequired();
+            
+            // Configure composite unique constraint
+            b.HasIndex(ur => new { ur.UserId, ur.RoleId })
+                .IsUnique();
+        });
+        
+        // Teacher entity
+        modelBuilder.Entity<Teacher>(b =>
+        {
+            b.ToTable(TablePrefix + "Teachers");
+            b.HasKey(x => x.Id);
+            b.Property(e => e.Id).ValueGeneratedNever();
+            
+            b.Property(t => t.UserId)
+                .IsRequired();
+            
+            // Add unique index for UserId
+            b.HasIndex(t => t.UserId)
+                .IsUnique();
+            
+            b.Property(t => t.Expertise)
+                .HasMaxLength(255);
+            
+            // Configure one-to-one relationship: teacher belongs to user
+            b.HasOne(t => t.User)
+                .WithOne(u => u.TeacherProfile)
+                .HasForeignKey<Teacher>(t => t.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+    }
+
+    /// <summary>
+    /// Category Configuration
+    /// </summary>
+    /// <param name="modelBuilder"></param>
+    public static void ConfigureCategoryManagement(this ModelBuilder modelBuilder)
+    {
+        // Category entity
+        modelBuilder.Entity<Category>(b =>
+        {
+            b.ToTable(TablePrefix + "Categories");
+            b.HasKey(x => x.Id);
+            b.Property(e => e.Id).ValueGeneratedNever();
+            
+            b.Property(c => c.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+            
+            b.Property(c => c.Description)
+                .HasMaxLength(255);
+            
+            b.Property(c => c.ParentId);
+            
+            b.Property(c => c.SortOrder)
+                .IsRequired()
+                .HasDefaultValue(0);
+            
+            b.Property(c => c.Active)
+                .IsRequired()
+                .HasDefaultValue(true);
+            
+            b.Property(c => c.CreatedAt)
+                .IsRequired();
+            
+            b.Property(c => c.UpdatedAt);
+            
+            // Configure self-referencing relationship: category has many subcategories
+            b.HasOne(c => c.Parent)
+                .WithMany(c => c.Children)
+                .HasForeignKey(c => c.ParentId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            // Configure one-to-many relationship: category has many courses
+            b.HasMany(c => c.Courses)
+                .WithOne(c => c.Category)
+                .HasForeignKey(c => c.CategoryId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+    }
+
+    /// <summary>
     /// Course Management Configuration (Course + CourseChapter)
     /// </summary>
     /// <param name="modelBuilder"></param>
@@ -38,12 +217,25 @@ public static class MoocDbContextModelCreatingExtensions
             b.HasKey(x => x.Id);
             b.Property(e => e.Id).ValueGeneratedNever();
             
-            b.Property(c => c.CourseName)
+            b.Property(c => c.Title)
                 .IsRequired()
-                .HasMaxLength(CourseEntityConsts.MaxCourseNameLength);
+                .HasMaxLength(255);
             
             b.Property(c => c.Description)
-                .HasMaxLength(CourseEntityConsts.MaxDescriptionLength);
+                .HasMaxLength(1000);
+            
+            b.Property(c => c.CoverImage)
+                .HasMaxLength(500);
+            
+            b.Property(c => c.CategoryId)
+                .IsRequired();
+            
+            b.Property(c => c.TeacherId)
+                .IsRequired();
+            
+            b.Property(c => c.Status)
+                .IsRequired()
+                .HasDefaultValue(1);
             
             b.Property(c => c.IsActive)
                 .IsRequired()
@@ -52,11 +244,25 @@ public static class MoocDbContextModelCreatingExtensions
             b.Property(c => c.CreatedAt)
                 .IsRequired();
             
+            b.Property(c => c.UpdatedAt);
+            
             // Configure one-to-many relationship: one course has many chapters
             b.HasMany(c => c.Chapters)
                 .WithOne(ch => ch.Course)
                 .HasForeignKey(ch => ch.CourseId)
                 .OnDelete(DeleteBehavior.Cascade);
+            
+            // Configure many-to-one relationship: course belongs to category
+            b.HasOne(c => c.Category)
+                .WithMany(cat => cat.Courses)
+                .HasForeignKey(c => c.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            // Configure many-to-one relationship: course belongs to teacher (user)
+            b.HasOne(c => c.Teacher)
+                .WithMany(u => u.CoursesAsTeacher)
+                .HasForeignKey(c => c.TeacherId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         // CourseChapter entity

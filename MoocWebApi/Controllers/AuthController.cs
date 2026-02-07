@@ -35,13 +35,19 @@ public class auth (IConfiguration configuration): ControllerBase
 
 
 		user.UserName = request.UserName;
-        user.PassWord = Passwordhasher;
+        user.Password = Passwordhasher;
 
-        user.Age = request.Age;
-
-        user.PhoneNumber = request.Phonenumber;
+        user.Phone = request.Phonenumber.ToString();
         user.Email = request.Email;
-        user.Gender = request.Gender;
+        if (!string.IsNullOrEmpty(request.Gender)) {
+            if (request.Gender.ToLower() == "male") {
+                user.Gender = Mooc.Model.Entity.Gender.Male;
+            } else if (request.Gender.ToLower() == "female") {
+                user.Gender = Mooc.Model.Entity.Gender.Female;
+            } else {
+                user.Gender = Mooc.Model.Entity.Gender.Other;
+            }
+        }
 
 		_users.Add(user);
 		return Ok(user);
@@ -54,7 +60,7 @@ public class auth (IConfiguration configuration): ControllerBase
 		var user = _users.FirstOrDefault(u => u.UserName == Request.Username);
 
 		var Passwordhasher = new PasswordHasher<User>();
-		var result = Passwordhasher.VerifyHashedPassword(user, user.PassWord, Request.Password);
+		var result = Passwordhasher.VerifyHashedPassword(user, user.Password, Request.Password);
 
 		if (result == PasswordVerificationResult.Failed)
 		{

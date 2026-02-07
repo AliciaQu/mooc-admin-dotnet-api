@@ -1,12 +1,17 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Mooc.Application.Contracts.CourseChapter;
 using Mooc.Application.Contracts.CourseChapter.Dto;
+using Mooc.Application.Contracts.Dto;
+using Mooc.Shared;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MoocWebApi.Controllers.CourseChapter;
 
 /// <summary>
 /// Course Chapter Management API
 /// </summary>
-[ApiExplorerSettings(GroupName = nameof(SwaggerGroup.CourseChapterService))]
 [Route("api/[controller]/[action]")]
 [ApiController]
 public class CourseChapterController : ControllerBase
