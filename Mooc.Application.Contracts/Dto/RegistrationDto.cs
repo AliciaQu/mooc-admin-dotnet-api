@@ -8,27 +8,29 @@ namespace Mooc.Application.Contracts.Dto
 {
 	public record RegistrationDto
 	{
-        private string userNmae;
+		
+		public int Id { get; set; }=int.MaxValue;
+		[Required]
+		[StringLength(30,MinimumLength =3)]
+		public string UserName { get; set; } = string.Empty;
 
-        public RegistrationDto(int Id, string UserNmae, string Email, int PhoneNumber, string Gender, int Age, string PassWord)
-        {
-            this.Id = Id;
-            userNmae = UserNmae;
-            this.Email = Email;
-            this.PhoneNumber = PhoneNumber;
-            this.Gender = Gender;
-            this.Age = Age;
-            this.PassWord = PassWord;
-        }
+		[Required]
+		[EmailAddress]
+		public string Email { get; set; } = string.Empty;
 
-        public int Id { get; set; }
-		public string UserName { get; set; } = "";
-		public string Email { get; set; } = "";
-		public int PhoneNumber { get; set; }
-		public string Gender { get; set; } = "";
+
+		[Required]
+	
+		
+		public long Phonenumber { get; set; }
+		[Required]
+		
+		public string Gender { get; set; }
+		[Required]
+
 		public int Age { get; set; }
-		public string PassWord { get; set; } = "";
-
+		[Required]
+		
+		public string Password { get; set; }
 	}
-
 }
