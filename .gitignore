@@ -2,6 +2,7 @@
 bin/
 obj/
 out/
+example/
 
 # Build results
 [Dd]ebug/

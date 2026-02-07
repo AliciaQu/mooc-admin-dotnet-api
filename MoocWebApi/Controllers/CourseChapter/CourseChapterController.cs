@@ -12,7 +12,6 @@ namespace MoocWebApi.Controllers.CourseChapter;
 /// <summary>
 /// Course Chapter Management API
 /// </summary>
-[ApiExplorerSettings(GroupName = nameof(SwaggerGroup.CourseChapterService))]
 [Route("api/[controller]/[action]")]
 [ApiController]
 public class CourseChapterController : ControllerBase
