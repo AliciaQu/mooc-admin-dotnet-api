@@ -24,8 +24,11 @@ public class auth (IConfiguration configuration): ControllerBase
 
 
 
+
 	[HttpPost("registr")]
-    public ActionResult<User> Register(RegistrationDto request)
+
+	public async Task<RegisterOutputDto> Createasys([FromBody]RegistrationDto registrationDto)
+   
     {
 
 		var user = new User();
@@ -80,9 +83,13 @@ public class auth (IConfiguration configuration): ControllerBase
 
 		};
 		var key = new SymmetricSecurityKey(
-			Encoding.UTF8.GetBytes(configuration.GetValue<string>("AppSetting:Token")!));
+			Encoding.UTF8.GetBytes(configuration.GetValue<string>("JwtSetting:SecurityKey")!));
+		var alg = configuration["JwtSetting:ENAlgorithm"];
+		var algorithm = alg == "HS256"
+			? SecurityAlgorithms.HmacSha256
+			: SecurityAlgorithms.HmacSha256; 
 
-		var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+		var creds = new SigningCredentials(key, algorithm);
 		var tokenDescriptor = new JwtSecurityToken(
 		 issuer: configuration["JwtSetting:Issuer"],
 		 audience: configuration["JwtSetting:Audience"],

@@ -57,6 +57,7 @@ namespace MoocWebApi
 
                 //Add Mooc Application services
                 builder.Services.AddApplication();
+              
 
                 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
                 //
