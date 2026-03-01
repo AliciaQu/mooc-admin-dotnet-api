@@ -1,51 +1,56 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using Azure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Mooc.Application.Contracts.Demo;
 using Mooc.Application.Demo;
 using Mooc.Model.Entity;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
-using System.Text;
-using System.IdentityModel.Tokens.Jwt;
+
+
 
 namespace MoocWebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 
-public class auth (IConfiguration configuration): ControllerBase
-
-
+public class AuthController : ControllerBase
 {
 
+	private static readonly List<User> _users = new();
+	private readonly IOptions<JwtSettings> _jwtSettings;
 
-	private static List<User> _users = new List<User>();
+	public AuthController(IOptions<JwtSettings> jwtSettings)
+	{
+		_jwtSettings = jwtSettings;
+	}
 
 
+	[HttpPost("regisetr")]
 
-
-	[HttpPost("registr")]
-
-	public async Task<RegisterOutputDto> Createasys([FromBody]RegistrationDto registrationDto)
+	public async Task<RegisterOutputDto> Createasys([FromBody]RegistrationDto input)
    
     {
 
 		var user = new User();
 
-		var Passwordhasher = new PasswordHasher<User>().HashPassword(user, request.Password);
+
+		var Passwordhasher = new PasswordHasher<User>().HashPassword(user, input.Password);
+
 	
 
-
-		user.UserName = request.UserName;
+		user.UserName = input.UserName;
         user.Password = Passwordhasher;
 
-        user.Phone = request.Phonenumber.ToString();
-        user.Email = request.Email;
-        if (!string.IsNullOrEmpty(request.Gender)) {
-            if (request.Gender.ToLower() == "male") {
+        user.Phone = input.Phone.ToString();
+        user.Email = input.Email;
+        if (!string.IsNullOrEmpty(input.Gender)) {
+            if (input.Gender.ToLower() == "male") {
                 user.Gender = Mooc.Model.Entity.Gender.Male;
-            } else if (request.Gender.ToLower() == "female") {
+            } else if (input.Gender.ToLower() == "female") {
                 user.Gender = Mooc.Model.Entity.Gender.Female;
             } else {
                 user.Gender = Mooc.Model.Entity.Gender.Other;
@@ -53,12 +58,27 @@ public class auth (IConfiguration configuration): ControllerBase
         }
 
 		_users.Add(user);
-		return Ok(user);
-    }
 
 
-[HttpPost("login")]
-    public ActionResult<String> Login(LoginDto Request)
+
+		var output = new RegisterOutputDto
+		{
+			UserName = user.UserName,
+			Email = user.Email,
+			Phone = user.Phone,
+			Gender = input.Gender,
+			Dob = input.Dob
+		};
+
+		return output;
+	}
+
+
+	[HttpPost("login")]
+	public async Task<string> Login(LoginDto Request)
+
+
+
     {
 		var user = _users.FirstOrDefault(u => u.UserName == Request.Username);
 
@@ -67,36 +87,37 @@ public class auth (IConfiguration configuration): ControllerBase
 
 		if (result == PasswordVerificationResult.Failed)
 		{
-			return BadRequest("User Name Or Pass word dose not Found.");
+			return ("User Name Or Pass word dose not Found.");
 		}
 		string token = CreatToken(user);
 
 
-		return Ok(token);
+		return(token);
 	}
 
 	private string CreatToken(User user)
 	{
+		var settings = _jwtSettings.Value;
 		var claims = new List<Claim>
 		{
 			new Claim(ClaimTypes.Name,user.UserName)
 
 		};
 		var key = new SymmetricSecurityKey(
-			Encoding.UTF8.GetBytes(configuration.GetValue<string>("JwtSetting:SecurityKey")!));
-		var alg = configuration["JwtSetting:ENAlgorithm"];
+			Encoding.UTF8.GetBytes(settings.SecurityKey));
+		var alg = settings.ENAlgorithm;
 		var algorithm = alg == "HS256"
 			? SecurityAlgorithms.HmacSha256
 			: SecurityAlgorithms.HmacSha256; 
 
 		var creds = new SigningCredentials(key, algorithm);
 		var tokenDescriptor = new JwtSecurityToken(
-		 issuer: configuration["JwtSetting:Issuer"],
-		 audience: configuration["JwtSetting:Audience"],
+		issuer: settings.Issuer,
+		audience: settings.Audience,
 		 claims: claims,
-		 expires: DateTime.UtcNow.AddSeconds(
-			 double.Parse(configuration["JwtSetting:ExpireSeconds"]!)),
-		 signingCredentials: creds
+
+		  expires: DateTime.UtcNow.AddSeconds(settings.ExpireSeconds), 
+	signingCredentials: creds
 	 );
 		return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);	
 	}

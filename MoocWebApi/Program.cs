@@ -19,6 +19,7 @@ using System.Reflection;
 using System.Text.Json;
 
 
+
 namespace MoocWebApi
 {
     public class Program
@@ -77,8 +78,10 @@ namespace MoocWebApi
                         option.UseSqlite(connectString);
 
                 });
+				builder.Services.Configure<JwtSettings>(
+	builder.Configuration.GetSection("JwtSetting"));
 
-                builder.Services.AddControllers(options =>
+				builder.Services.AddControllers(options =>
                 {
                     options.Filters.Add<ValidateModelFilter>();
                     options.Filters.Add<UnifiedResultFilter>();
