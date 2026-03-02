@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace Mooc.Application.Contracts.Dto
 {
-	internal class TokenResponseDto
+	internal record TokenResponseDto
 	{
+		  
+        public string AccessToken { get; set; }
+		public string RefreshToken { get; set; }
 	}
+
 }

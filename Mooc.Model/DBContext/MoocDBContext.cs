@@ -54,6 +54,7 @@ namespace Mooc.Model.DBContext
                 .WithMany(p => p.RolePermissions)
                 .HasForeignKey(rp => rp.PermissionId);
         }
-    }
+		public DbSet<RefreshToken> RefreshTokens { get; set; }
+	}
 }
 

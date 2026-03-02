@@ -4,10 +4,12 @@ using System.Text;
 using Azure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Mooc.Application.Contracts.Demo;
 using Mooc.Application.Demo;
+using Mooc.Model.DBContext;
 using Mooc.Model.Entity;
 
 
@@ -20,8 +22,10 @@ namespace MoocWebApi.Controllers;
 public class AuthController : ControllerBase
 {
 
-	private static readonly List<User> _users = new();
+	
+	
 	private readonly IOptions<JwtSettings> _jwtSettings;
+	private readonly MoocDBContext _context;
 
 	public AuthController(IOptions<JwtSettings> jwtSettings)
 	{
@@ -47,17 +51,9 @@ public class AuthController : ControllerBase
 
         user.Phone = input.Phone.ToString();
         user.Email = input.Email;
-        if (!string.IsNullOrEmpty(input.Gender)) {
-            if (input.Gender.ToLower() == "male") {
-                user.Gender = Mooc.Model.Entity.Gender.Male;
-            } else if (input.Gender.ToLower() == "female") {
-                user.Gender = Mooc.Model.Entity.Gender.Female;
-            } else {
-                user.Gender = Mooc.Model.Entity.Gender.Other;
-            }
-        }
 
-		_users.Add(user);
+
+		_context.Add(user);
 
 
 
@@ -80,8 +76,12 @@ public class AuthController : ControllerBase
 
 
     {
-		var user = _users.FirstOrDefault(u => u.UserName == Request.Username);
+		var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == Request.Username);
+		if (user == null)
+		{
+			return "Username or password not found.";
 
+		}
 		var Passwordhasher = new PasswordHasher<User>();
 		var result = Passwordhasher.VerifyHashedPassword(user, user.Password, Request.Password);
 
@@ -89,11 +89,29 @@ public class AuthController : ControllerBase
 		{
 			return ("User Name Or Pass word dose not Found.");
 		}
+
+	
+		
 		string token = CreatToken(user);
-
-
-		return(token);
+		var refreshToken = await CreateRefreshToken(user.Id);
+		return Ok(new TokenResponseDto
+		{
+			AccessToken = token,
+			RefreshToken = refreshToken
+		});
 	}
+
+		return (token);
+	}
+		private async Task<string> CreateRefreshToken(string  userId)
+	{
+		var refreshToken = new RefreshToken
+		{
+			Token = Guid.NewGuid().ToString(),
+			ExpiryDate = DateTime.UtcNow.AddDays(7),
+			IsUsed = false,
+			UserId = userId
+		};
 
 	private string CreatToken(User user)
 	{
