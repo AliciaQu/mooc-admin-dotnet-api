@@ -28,10 +28,4 @@
     <Folder Include="UpLoadFiles\Avatar\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="AppData\moocdb.db">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>

@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 using System.Text.Json;
+using Mooc.Application.Mapping;
 
 
 
@@ -58,9 +59,16 @@ namespace MoocWebApi
 
                 //Add Mooc Application services
                 builder.Services.AddApplication();
-              
+                builder.Services.AddAutoMapper(cfg =>
+                {
+                    cfg.AddProfile<Mooc.Application.Mapping.AuthMappingProfile>();
+                });
 
                 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
+
+
+                builder.Services.AddTransient<ExceptionHandlingMiddleware>();
+              
                 //
                 builder.Services.Configure<DataBaseOption>(builder.Configuration.GetSection(DataBaseOption.Section));
                 var dataBaseOption = builder.Configuration.GetSection(DataBaseOption.Section).Get<DataBaseOption>();

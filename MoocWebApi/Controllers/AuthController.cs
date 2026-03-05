@@ -71,7 +71,7 @@ public class AuthController : ControllerBase
 
 
 	[HttpPost("login")]
-	public async Task<string> Login(LoginDto Request)
+	public async Task<TokenResponseDto> Login(LoginDto Request)
 
 
 
@@ -79,7 +79,7 @@ public class AuthController : ControllerBase
 		var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == Request.Username);
 		if (user == null)
 		{
-			return "Username or password not found.";
+			throw new Exception( "Username or password not found.");
 
 		}
 		var Passwordhasher = new PasswordHasher<User>();
@@ -87,23 +87,23 @@ public class AuthController : ControllerBase
 
 		if (result == PasswordVerificationResult.Failed)
 		{
-			return ("User Name Or Pass word dose not Found.");
+			throw new Exception ("User Name Or Pass word dose not Found.");
 		}
 
 	
 		
 		string token = CreatToken(user);
-		var refreshToken = await CreateRefreshToken(user.Id);
-		return Ok(new TokenResponseDto
+		var refreshToken = await CreateRefreshToken( user.Id);
+		return new TokenResponseDto
 		{
 			AccessToken = token,
-			RefreshToken = refreshToken
-		});
+            RefreshToken = refreshToken
+		};
 	}
 
-		return (token);
-	}
-		private async Task<string> CreateRefreshToken(string  userId)
+
+
+	private async Task<string> CreateRefreshToken(long userId)
 	{
 		var refreshToken = new RefreshToken
 		{
@@ -112,8 +112,13 @@ public class AuthController : ControllerBase
 			IsUsed = false,
 			UserId = userId
 		};
+		_context.RefreshTokens.Add(refreshToken);
+		await _context.SaveChangesAsync();
 
-	private string CreatToken(User user)
+		return refreshToken.Token;
+	}
+
+    private string CreatToken(User user)
 	{
 		var settings = _jwtSettings.Value;
 		var claims = new List<Claim>
