@@ -6,7 +6,14 @@ using System.Threading.Tasks;
 
 namespace Mooc.Application.Mapping
 {
-    internal class AuthMappingProfile
+    public class AuthMappingProfile : Profile
     {
+        public AuthMappingProfile()
+        {
+            CreateMap<RegistrationDto, User>()
+                .ForMember(dest => dest.Password, opt => opt.Ignore());
+
+            CreateMap<User, RegisterOutputDto>();
+        }
     }
 }

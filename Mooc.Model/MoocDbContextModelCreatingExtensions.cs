@@ -232,11 +232,11 @@ public static class MoocDbContextModelCreatingExtensions
             
             b.Property(c => c.TeacherId)
                 .IsRequired();
-            
+
             b.Property(c => c.Status)
-                .IsRequired()
-                .HasDefaultValue(1);
-            
+         .IsRequired()
+         .HasDefaultValue(CourseStatus.Draft);
+
             b.Property(c => c.IsActive)
                 .IsRequired()
                 .HasDefaultValue(true);

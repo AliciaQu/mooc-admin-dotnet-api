@@ -10,6 +10,8 @@ namespace Mooc.Application.Contracts.System
 	internal interface IAuthService 
 	{
 
-		Task<User?>
-	}
+        Task<RegisterOutputDto> RegisterAsync(RegistrationDto input);
+        Task<TokenResponseDto> LoginAsync(LoginDto input);
+        Task<TokenResponseDto> RefreshAsync(RefreshTokenRequestDto input);
+    }
 }

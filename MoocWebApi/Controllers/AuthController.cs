@@ -27,13 +27,14 @@ public class AuthController : ControllerBase
 	private readonly IOptions<JwtSettings> _jwtSettings;
 	private readonly MoocDBContext _context;
 
-	public AuthController(IOptions<JwtSettings> jwtSettings)
-	{
-		_jwtSettings = jwtSettings;
-	}
+    public AuthController(IOptions<JwtSettings> jwtSettings, MoocDBContext context)
+    {
+        _jwtSettings = jwtSettings;
+        _context = context;  
+    }
 
 
-	[HttpPost("regisetr")]
+    [HttpPost("regisetr")]
 
 	public async Task<RegisterOutputDto> Createasys([FromBody]RegistrationDto input)
    
@@ -51,13 +52,19 @@ public class AuthController : ControllerBase
 
         user.Phone = input.Phone.ToString();
         user.Email = input.Email;
+        user.FirstName = input.UserName;  
+        user.LastName = input.UserName;   
+        user.CreatedAt = DateTime.UtcNow; 
+        user.Address = "";               
+        user.Avatar = "";                 
+        user.Bio = "";
+
+        _context.Add(user);
+        await _context.SaveChangesAsync();
 
 
-		_context.Add(user);
 
-
-
-		var output = new RegisterOutputDto
+        var output = new RegisterOutputDto
 		{
 			UserName = user.UserName,
 			Email = user.Email,
