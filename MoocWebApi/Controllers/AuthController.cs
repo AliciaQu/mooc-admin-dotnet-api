@@ -46,8 +46,8 @@ public class AuthController : ControllerBase
 		var Passwordhasher = new PasswordHasher<User>().HashPassword(user, input.Password);
 
 	
-
-		user.UserName = input.UserName;
+		user.Id= DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(); 
+        user.UserName = input.UserName;
         user.Password = Passwordhasher;
 
         user.Phone = input.Phone.ToString();
