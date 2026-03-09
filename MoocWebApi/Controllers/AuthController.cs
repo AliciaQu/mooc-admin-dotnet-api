@@ -43,12 +43,11 @@ public class AuthController : ControllerBase
 		var user = new User();
 
 
-		var Passwordhasher = new PasswordHasher<User>().HashPassword(user, input.Password);
-
+		
 	
 		user.Id= DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(); 
         user.UserName = input.UserName;
-        user.Password = Passwordhasher;
+     
 
         user.Phone = input.Phone.ToString();
         user.Email = input.Email;
@@ -58,7 +57,9 @@ public class AuthController : ControllerBase
         user.Address = "";               
         user.Avatar = "";                 
         user.Bio = "";
+       
 
+        user.Password = new PasswordHasher<User>().HashPassword(user, input.Password);
         _context.Add(user);
         await _context.SaveChangesAsync();
 
