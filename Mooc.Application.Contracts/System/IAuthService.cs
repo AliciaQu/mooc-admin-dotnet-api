@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace Mooc.Application.Contracts.System
 {
-	internal interface IAuthService 
+	public interface IAuthService 
 	{
 
         Task<RegisterOutputDto> RegisterAsync(RegistrationDto input);

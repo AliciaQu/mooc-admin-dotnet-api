@@ -5,6 +5,9 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.WebEncoders;
 using Mooc.Application;
+using Mooc.Application.Contracts.System;
+using Mooc.Application.Mapping;
+using Mooc.Application.System;
 using Mooc.Core;
 using Mooc.Core.Attributes;
 using Mooc.Model.DBContext;
@@ -17,7 +20,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 using System.Text.Json;
-using Mooc.Application.Mapping;
 
 
 
@@ -56,6 +58,7 @@ namespace MoocWebApi
 
                 // Add services to the container.
                 builder.Services.AddAppCore(builder.Configuration);
+                builder.Services.AddScoped<IAuthService, AuthService>();
 
                 //Add Mooc Application services
                 builder.Services.AddApplication();

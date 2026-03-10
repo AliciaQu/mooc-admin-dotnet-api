@@ -1,6 +1,3 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using Azure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -9,8 +6,13 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Mooc.Application.Contracts.Demo;
 using Mooc.Application.Demo;
+using Mooc.Application.System;
 using Mooc.Model.DBContext;
 using Mooc.Model.Entity;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Mooc.Application.Contracts.System;
 
 
 
@@ -22,138 +24,31 @@ namespace MoocWebApi.Controllers;
 public class AuthController : ControllerBase
 {
 
-	
-	
-	private readonly IOptions<JwtSettings> _jwtSettings;
-	private readonly MoocDBContext _context;
+    private readonly IAuthService _authService;  
 
-    public AuthController(IOptions<JwtSettings> jwtSettings, MoocDBContext context)
+  
+
+
+  
+    public AuthController(IAuthService authService)
     {
-        _jwtSettings = jwtSettings;
-        _context = context;  
+        _authService = authService;
     }
 
 
     [HttpPost("regisetr")]
 
-	public async Task<RegisterOutputDto> Createasys([FromBody]RegistrationDto input)
-   
+    public async Task<RegisterOutputDto> Createasys([FromBody] RegistrationDto input)  
     {
-
-		var user = new User();
-
-
-		
-	
-		user.Id= DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(); 
-        user.UserName = input.UserName;
-     
-
-        user.Phone = input.Phone.ToString();
-        user.Email = input.Email;
-        user.FirstName = input.UserName;  
-        user.LastName = input.UserName;   
-        user.CreatedAt = DateTime.UtcNow; 
-        user.Address = "";               
-        user.Avatar = "";                 
-        user.Bio = "";
-       
-
-        user.Password = new PasswordHasher<User>().HashPassword(user, input.Password);
-        _context.Add(user);
-        await _context.SaveChangesAsync();
+        return await _authService.RegisterAsync(input);
+    }
 
 
-
-        var output = new RegisterOutputDto
-		{
-			UserName = user.UserName,
-			Email = user.Email,
-			Phone = user.Phone,
-			Gender = input.Gender,
-			Dob = input.Dob
-		};
-
-		return output;
-	}
-
-
-	[HttpPost("login")]
-	public async Task<TokenResponseDto> Login(LoginDto Request)
-
-
-
+    [HttpPost("login")]
+    public async Task<TokenResponseDto> Login(LoginDto request)
     {
-		var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == Request.Username);
-		if (user == null)
-		{
-			throw new Exception( "Username or password not found.");
-
-		}
-		var Passwordhasher = new PasswordHasher<User>();
-		var result = Passwordhasher.VerifyHashedPassword(user, user.Password, Request.Password);
-
-		if (result == PasswordVerificationResult.Failed)
-		{
-			throw new Exception ("User Name Or Pass word dose not Found.");
-		}
-
-	
-		
-		string token = CreatToken(user);
-		var refreshToken = await CreateRefreshToken( user.Id);
-		return new TokenResponseDto
-		{
-			AccessToken = token,
-            RefreshToken = refreshToken
-		};
-	}
-
-
-
-	private async Task<string> CreateRefreshToken(long userId)
-	{
-		var refreshToken = new RefreshToken
-		{
-			Token = Guid.NewGuid().ToString(),
-			ExpiryDate = DateTime.UtcNow.AddDays(7),
-			IsUsed = false,
-			UserId = userId
-		};
-		_context.RefreshTokens.Add(refreshToken);
-		await _context.SaveChangesAsync();
-
-		return refreshToken.Token;
-	}
-
-    private string CreatToken(User user)
-	{
-		var settings = _jwtSettings.Value;
-		var claims = new List<Claim>
-		{
-			new Claim(ClaimTypes.Name,user.UserName)
-
-		};
-		var key = new SymmetricSecurityKey(
-			Encoding.UTF8.GetBytes(settings.SecurityKey));
-		var alg = settings.ENAlgorithm;
-		var algorithm = alg == "HS256"
-			? SecurityAlgorithms.HmacSha256
-			: SecurityAlgorithms.HmacSha256; 
-
-		var creds = new SigningCredentials(key, algorithm);
-		var tokenDescriptor = new JwtSecurityToken(
-		issuer: settings.Issuer,
-		audience: settings.Audience,
-		 claims: claims,
-
-		  expires: DateTime.UtcNow.AddSeconds(settings.ExpireSeconds), 
-	signingCredentials: creds
-	 );
-		return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);	
-	}
-    
-
+        return await _authService.LoginAsync(request);
+    }
 
 }
 
