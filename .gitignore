@@ -443,3 +443,8 @@ MoocWebApi/appsettings.Development.json
 MoocWebApi/appsettings*.local.json
 **/appsettings.*.json.user
 
+# Claude / AI tooling
+CLAUDE.md
+.claude/
+.understand-anything/
+

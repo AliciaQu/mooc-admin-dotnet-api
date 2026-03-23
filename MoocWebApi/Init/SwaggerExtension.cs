@@ -36,11 +36,11 @@ public static class SwaggerExtension
             //use jwt
             optinos.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
-                Description = "Please enter Bearer Token in the input box below to enable JWT authentication",
-                Name = "Authorization", // Default name, cannot be modified
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
                 In = ParameterLocation.Header,
-                Type = SecuritySchemeType.ApiKey,
-                Scheme = "Bearer"
+                Name = "Authorization"
             });
 
             //Make Swagger comply with the JWT protocol

@@ -43,7 +43,6 @@ namespace Mooc.Application.System
             if (existingEmail != null)
                 throw new EntityAlreadyExistsException("Email already taken.");
             var user = new User();
-            user.Id = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             user.UserName = input.UserName;
             user.Phone = input.Phone;
             user.Email = input.Email;
@@ -71,6 +70,7 @@ namespace Mooc.Application.System
         public async Task<TokenResponseDto> LoginAsync(LoginDto input)
         {
             var user = await _context.Users
+                .Include(u => u.Roles)
                 .FirstOrDefaultAsync(u => u.UserName == input.Username);
             if (user == null)
                 throw new EntityNotFoundException("User not found.");
@@ -94,6 +94,7 @@ namespace Mooc.Application.System
         {
             var token = await _context.RefreshTokens
                 .Include(rt => rt.User)
+                    .ThenInclude(u => u.Roles)
                 .FirstOrDefaultAsync(rt => rt.Token == input.RefreshToken);
 
             if (token == null || token.IsUsed || token.ExpiryDate < DateTime.UtcNow)
@@ -117,9 +118,18 @@ namespace Mooc.Application.System
         {
             var settings = _jwtSettings.Value;
             var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, user.UserName)
-        };
+            {
+                new Claim("id", user.Id.ToString()),
+                new Claim("firstName", user.FirstName),
+                new Claim("lastName", user.LastName),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            if (user.Roles != null)
+            {
+                foreach (var role in user.Roles)
+                    claims.Add(new Claim(ClaimTypes.Role, role.Name));
+            }
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(settings.SecurityKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var token = new JwtSecurityToken(
@@ -132,7 +142,7 @@ namespace Mooc.Application.System
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        private async Task<string> CreateRefreshToken(long userId)
+        private async Task<string> CreateRefreshToken(int userId)
         {
             var refreshToken = new RefreshToken
             {
