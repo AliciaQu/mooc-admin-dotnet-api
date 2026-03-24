@@ -92,8 +92,8 @@ public static class MoocDbContextModelCreatingExtensions
             b.HasMany(u => u.Roles)
                 .WithMany()
                 .UsingEntity<UserRole>(
-                    j => j.HasOne(ur => ur.Role).WithMany(),
-                    j => j.HasOne(ur => ur.User).WithMany()
+                    j => j.HasOne(ur => ur.Role).WithMany().HasForeignKey(ur => ur.RoleId),
+                    j => j.HasOne(ur => ur.User).WithMany().HasForeignKey(ur => ur.UserId)
                 );
             
             // Configure one-to-one relationship: user has one teacher profile
