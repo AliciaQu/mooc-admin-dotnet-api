@@ -43,6 +43,7 @@ namespace Mooc.Application.System
             if (existingEmail != null)
                 throw new EntityAlreadyExistsException("Email already taken.");
             var user = new User();
+            user.Id = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             user.UserName = input.UserName;
             user.Phone = input.Phone;
             user.Email = input.Email;
@@ -142,7 +143,7 @@ namespace Mooc.Application.System
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        private async Task<string> CreateRefreshToken(int userId)
+        private async Task<string> CreateRefreshToken(long userId)
         {
             var refreshToken = new RefreshToken
             {
@@ -156,14 +157,6 @@ namespace Mooc.Application.System
             return refreshToken.Token;
         }
         
-
-        public AuthService(MoocDBContext context)
-        {
-            _context = context;
-        }
-
-      
-
 
     }
 

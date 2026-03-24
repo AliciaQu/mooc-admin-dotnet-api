@@ -30,7 +30,7 @@ namespace Mooc.Application.System
             UpdatedAt = user.UpdatedAt
         };
 
-        public async Task<UserOutputDto> GetByIdAsync(int id)
+        public async Task<UserOutputDto> GetByIdAsync(long id)
         {
             var user = await _context.Users
                 .Include(u => u.Roles)
@@ -73,7 +73,7 @@ namespace Mooc.Application.System
             };
         }
 
-        public async Task<int> CreateAsync(CreateUserDto input, string hashedPassword)
+        public async Task<long> CreateAsync(CreateUserDto input, string hashedPassword)
         {
             await using var tx = await _context.Database.BeginTransactionAsync();
 
@@ -88,6 +88,7 @@ namespace Mooc.Application.System
 
             var user = new User
             {
+                Id = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                 UserName = input.UserName,
                 Password = hashedPassword,
                 Email = input.Email,
@@ -103,10 +104,11 @@ namespace Mooc.Application.System
             };
 
             _context.Users.Add(user);
-            await _context.SaveChangesAsync();  // DB generates user.Id here
+            await _context.SaveChangesAsync();
 
             var userRoles = roles.Select(r => new UserRole
             {
+                Id = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                 UserId = user.Id,
                 RoleId = r.Id,
                 CreatedAt = DateTime.UtcNow
@@ -119,7 +121,7 @@ namespace Mooc.Application.System
             return user.Id;
         }
 
-        public async Task DeleteAsync(List<int> ids)
+        public async Task DeleteAsync(List<long> ids)
         {
             await using var tx = await _context.Database.BeginTransactionAsync();
 
@@ -134,7 +136,7 @@ namespace Mooc.Application.System
             await tx.CommitAsync();
         }
 
-        public async Task UpdateAsync(int id, UpdateUserDto input, string? hashedPassword)
+        public async Task UpdateAsync(long id, UpdateUserDto input, string? hashedPassword)
         {
             await using var tx = await _context.Database.BeginTransactionAsync();
 
@@ -159,6 +161,7 @@ namespace Mooc.Application.System
 
                 _context.UserRoles.AddRange(roles.Select(r => new UserRole
                 {
+                    Id = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                     UserId = id,
                     RoleId = r.Id,
                     CreatedAt = DateTime.UtcNow
@@ -189,7 +192,7 @@ namespace Mooc.Application.System
             await tx.CommitAsync();
         }
 
-        public async Task<UserRoleMetaDto> GetRoleMetaAsync(int id)
+        public async Task<UserRoleMetaDto> GetRoleMetaAsync(long id)
         {
             var user = await _context.Users
                 .Include(u => u.Roles)
