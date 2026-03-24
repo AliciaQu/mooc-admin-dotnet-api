@@ -49,7 +49,7 @@ public class Course : BaseEntity
     /// <summary>
     /// Teacher ID (Foreign Key)
     /// </summary>
-    public int TeacherId { get; set; }
+    public long TeacherId { get; set; }
 
     /// <summary>
     /// Course Status

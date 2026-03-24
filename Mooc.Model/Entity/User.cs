@@ -29,12 +29,6 @@ namespace Mooc.Model.Entity
     public class User : BaseEntity
     {
 		/// <summary>
-		/// User ID (int auto-increment, overrides BaseEntity long Id)
-		/// </summary>
-		public new int Id { get; set; }
-
-
-		/// <summary>
 		/// User Name
 		/// </summary>
 		public string UserName {  get; set; } = string.Empty;

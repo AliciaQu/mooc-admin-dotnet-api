@@ -8,7 +8,7 @@ public class Teacher : BaseEntity
     /// <summary>
     /// User ID (Foreign Key)
     /// </summary>
-    public int UserId { get; set; }
+    public long UserId { get; set; }
 
     /// <summary>
     /// Expertise

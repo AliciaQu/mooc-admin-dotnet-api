@@ -18,7 +18,7 @@ public class UserController : ControllerBase
     }
 
     private record CallerRoleContext(
-        int CallerId,
+        long CallerId,
         List<string> Roles,
         bool IsSuperAdmin,
         bool IsAdmin,
@@ -26,7 +26,7 @@ public class UserController : ControllerBase
 
     private CallerRoleContext GetRoleContext()
     {
-        var callerId = int.Parse(User.FindFirst("id")?.Value ?? "0");
+        var callerId = long.Parse(User.FindFirst("id")?.Value ?? "0");
         var roles = User.FindAll(ClaimTypes.Role).Select(c => c.Value.Trim().ToLower()).ToList();
         var isSuperAdmin = roles.Contains("super admin");
         var isAdmin = isSuperAdmin || roles.Contains("admin");
@@ -93,7 +93,7 @@ public class UserController : ControllerBase
     {
         var ctx = GetRoleContext();
 
-        if (int.TryParse(idOrName, out var targetId))
+        if (long.TryParse(idOrName, out var targetId))
         {
             if (!ctx.IsAdmin && targetId != ctx.CallerId)
                 return StatusCode(403, "Forbidden.");
@@ -119,7 +119,7 @@ public class UserController : ControllerBase
 
     // PUT /api/users/{id}
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateProfile(int id, [FromBody] UpdateUserDto input)
+    public async Task<IActionResult> UpdateProfile(long id, [FromBody] UpdateUserDto input)
     {
         var ctx = GetRoleContext();
 
@@ -173,10 +173,10 @@ public class UserController : ControllerBase
         if (!ctx.IsAdmin)
             return StatusCode(403, "Forbidden.");
 
-        List<int> idList;
+        List<long> idList;
         try
         {
-            idList = ids.Split(',').Select(s => int.Parse(s.Trim())).ToList();
+            idList = ids.Split(',').Select(s => long.Parse(s.Trim())).ToList();
         }
         catch
         {

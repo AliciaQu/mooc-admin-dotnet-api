@@ -8,12 +8,12 @@ public class UserRole : BaseEntity
     /// <summary>
     /// User ID (Foreign Key)
     /// </summary>
-    public int UserId { get; set; }
+    public long UserId { get; set; }
 
     /// <summary>
     /// Role ID (Foreign Key)
     /// </summary>
-    public int RoleId { get; set; }
+    public long RoleId { get; set; }
 
     /// <summary>
     /// Created At

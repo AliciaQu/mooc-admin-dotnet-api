@@ -38,7 +38,7 @@ public static class MoocDbContextModelCreatingExtensions
         {
             b.ToTable(TablePrefix + "Users");
             b.HasKey(x => x.Id);
-            b.Property(e => e.Id).ValueGeneratedOnAdd();
+            b.Property(e => e.Id).ValueGeneratedNever();
             
             b.Property(u => u.UserName)
                 .IsRequired()
@@ -114,7 +114,7 @@ public static class MoocDbContextModelCreatingExtensions
         {
             b.ToTable(TablePrefix + "UserRoles");
             b.HasKey(x => x.Id);
-            b.Property(e => e.Id).ValueGeneratedOnAdd();
+            b.Property(e => e.Id).ValueGeneratedNever();
             
             b.Property(ur => ur.UserId)
                 .IsRequired();
