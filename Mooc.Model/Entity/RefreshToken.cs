@@ -14,7 +14,7 @@ namespace Mooc.Model.Entity
 			public string Token { get; set; }
 			public DateTime ExpiryDate { get; set; }
 			public bool IsUsed { get; set; }
-			public long UserId { get; set; }
+			public int UserId { get; set; }
 			public User User { get; set; }  // navigation property to your existing User
 		}
 	

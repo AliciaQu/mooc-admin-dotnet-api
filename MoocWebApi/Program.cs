@@ -11,6 +11,7 @@ using Mooc.Application.System;
 using Mooc.Core;
 using Mooc.Core.Attributes;
 using Mooc.Model.DBContext;
+using Mooc.Model.Entity;
 using MoocWebApi.Filters;
 using MoocWebApi.Init;
 using MoocWebApi.Middlewares;
@@ -59,6 +60,7 @@ namespace MoocWebApi
                 // Add services to the container.
                 builder.Services.AddAppCore(builder.Configuration);
                 builder.Services.AddScoped<IAuthService, AuthService>();
+                builder.Services.AddScoped<IUserService, UserService>();
 
                 //Add Mooc Application services
                 builder.Services.AddApplication();
@@ -187,6 +189,18 @@ namespace MoocWebApi
                //     var dbSeedDataManagementService = socpe.ServiceProvider.GetRequiredService<IDBSeedDataManagementService>();
               //      dbSeedDataManagementService.IntiAsync().GetAwaiter().GetResult();
               //  }
+
+                using (var scope = app.Services.CreateScope())
+                {
+                    var db = scope.ServiceProvider.GetRequiredService<MoocDBContext>();
+                    var roleNames = new[] { "super admin", "admin", "teacher", "student" };
+                    foreach (var name in roleNames)
+                    {
+                        if (!db.Roles.Any(r => r.Name == name))
+                            db.Roles.Add(new Role { Name = name });
+                    }
+                    db.SaveChanges();
+                }
 
                 app.Run();
             }
