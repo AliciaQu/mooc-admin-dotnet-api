@@ -3,27 +3,6 @@ using Mooc.Model.Entity.Course;
 namespace Mooc.Model.Entity
 {
     /// <summary>
-    /// Gender Enum
-    /// </summary>
-    public enum Gender
-    {
-        /// <summary>
-        /// Male gender
-        /// </summary>
-        Male = 1,
-        
-        /// <summary>
-        /// Female gender
-        /// </summary>
-        Female = 2,
-        
-        /// <summary>
-        /// Other gender
-        /// </summary>
-        Other = 3
-    }
-
-    /// <summary>
     /// User Entity
     /// </summary>
     public class User : BaseEntity

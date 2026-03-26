@@ -91,8 +91,8 @@ namespace MoocWebApi
                         option.UseSqlite(connectString);
 
                 });
-				builder.Services.Configure<JwtSettings>(
-	builder.Configuration.GetSection("JwtSetting"));
+
+				builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSetting"));
 
 				builder.Services.AddControllers(options =>
                 {
